@@ -2,10 +2,11 @@
   "name": "express",
   "version": "1.0.0",
   "description": "",
-  "main": "Backend.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node Backend.js"
+    "start":"node Backend.js",
+    "build":"npm install"
   },
   "author": "",
   "license": "ISC",
