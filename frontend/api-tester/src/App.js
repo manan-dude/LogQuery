@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css'; // Import CSS file for styling
 
@@ -27,18 +27,21 @@ const App = () => {
                 status: response.status,
                 data: responseData,
             };
-            setLogs([...logs, log]);
-            await axios.get(`http://localhost:5000/test-api?url=${apiUrl}`);
+            setLogs((prevLogs) => [...prevLogs, log]);
+
+            // Log the API request to the backend
+            await axios.get(`http://localhost:5000/test-api?url=${encodeURIComponent(apiUrl)}`);
+
         } catch (error) {
             console.error('Error making API request:', error);
         }
     };
 
-   
-  useEffect(()=>
-  {
-
-  },[logs])
+    // Use useEffect to update logs when 'logs' state changes
+    useEffect(() => {
+        // Your logic here for any side effects related to 'logs'
+        // This will run every time 'logs' changes
+    }, [logs]);
 
     return (
         <div className="app-container">

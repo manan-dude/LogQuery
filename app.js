@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Create a write stream to log API statuses
-const accessLogStream = fs.createWriteStream('./access.log', { flags: 'a' });
+const accessLogStream = fs.createWriteStream('./logs/access.log', { flags: 'a' });
 
 const statusCategories = {
     200: 'success',
@@ -26,14 +26,18 @@ const statusCategories = {
 morgan.token('logData', (req, res) => {
     const statusCode = res.statusCode;
     const statusCategory = statusCategories[statusCode] || 'info';
+    const method = req.method;
+    const url = req.originalUrl || req.url;
+    const userAgent = req.headers['user-agent'];
 
     const data = {
         level: statusCategory,
-        url: req.originalUrl || req.url,
+        method: method,
+        url: url,
         timestamp: new Date().toISOString(),
-        userAgent: req.headers['user-agent']
+        userAgent: userAgent,
+        requestSent: true, // Indicate that the request was sent successfully
     };
-
     return JSON.stringify(data);
 });
 
@@ -64,9 +68,35 @@ app.get('/test-api', async (req, res) => {
         // Make a request to the specified API URL using axios
         const response = await axios.get(apiUrl);
         const status = response.status;
+
+        // Log the successful result
+        const logData = {
+            level: 'success',
+            method: 'GET',
+            url: apiUrl,
+            timestamp: new Date().toISOString(),
+            userAgent: req.headers['user-agent'],
+            requestSent: true,
+            result: response.data,
+        };
+        accessLogStream.write(JSON.stringify(logData) + '\n');
+
         res.status(200).json({ status: status });
     } catch (error) {
         console.error('Error testing API:', error);
+
+        // Log the error
+        const logData = {
+            level: 'error',
+            method: 'GET',
+            url: apiUrl,
+            timestamp: new Date().toISOString(),
+            userAgent: req.headers['user-agent'],
+            requestSent: false,
+            error: error.message,
+        };
+        accessLogStream.write(JSON.stringify(logData) + '\n');
+
         res.status(500).json({ error: 'Error testing API' });
     }
 });
