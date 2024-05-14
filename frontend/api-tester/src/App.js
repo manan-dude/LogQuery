@@ -3,6 +3,8 @@ import axios from 'axios';
 import './App.css'; // Import CSS file for styling
 
 
+const BaseUrl = 'https://logquery.onrender.com/'
+
 //Integrated 9 APIs for testing
 const apiUrls = [
   'https://catfact.ninja/fact',
@@ -46,7 +48,7 @@ const App = () => {
       setLogs((prevLogs) => [...prevLogs, log]);
 
       // Log the API request to the backend
-      await axios.get(`/test-api?url=${encodeURIComponent(apiUrl)}`);
+      await axios.get(`${BaseUrl}+/test-api?url=${encodeURIComponent(apiUrl)}`);
 
     } catch (error) {
       console.error('Error making API request:', error);
@@ -66,7 +68,7 @@ const App = () => {
   const fetchLogs = async () => {
     try {
       //fetching the saved APIs
-      const response = await axios.get('/logs');
+      const response = await axios.get(`https://logquery.onrender.com/logs`);
       setsaveLogs(response.data); // Update logs state with fetched logs
     } catch (error) {
       console.error('Error fetching logs:', error);
