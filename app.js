@@ -1,15 +1,20 @@
+// dependencies
 const express = require('express');
 const fs = require('fs');
 const morgan = require('morgan');
 const axios = require('axios');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const accessLogPath = path.join(__dirname, './logs/access.log');
 
-// Create a write stream to log API statuses
+//Appending Logs to logs folder named as access.log
 const accessLogStream = fs.createWriteStream('./logs/access.log', { flags: 'a' });
 
+
+//Mapping Status Code
 const statusCategories = {
     200: 'success',
     201: 'success',
@@ -43,6 +48,8 @@ morgan.token('logData', (req, res) => {
 
 // Use CORS middleware
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+
 
 // Use morgan middleware with custom token to log API status and metadata
 app.use(
@@ -101,7 +108,13 @@ app.get('/test-api', async (req, res) => {
     }
 });
 
-// Start the Express server
+// Endpoint to fetch logs for Query Interface
+app.get('/logs', (req, res) => {
+    const logs = fs.readFileSync(accessLogPath, 'utf8').split('\n').filter(line => line.trim() !== '').map(JSON.parse);
+    res.json(logs);
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
