@@ -46,7 +46,7 @@ const App = () => {
       setLogs((prevLogs) => [...prevLogs, log]);
 
       // Log the API request to the backend
-      await axios.get(`http://localhost:5000/test-api?url=${encodeURIComponent(apiUrl)}`);
+      await axios.get(`/test-api?url=${encodeURIComponent(apiUrl)}`);
 
     } catch (error) {
       console.error('Error making API request:', error);
@@ -66,7 +66,7 @@ const App = () => {
   const fetchLogs = async () => {
     try {
       //fetching the saved APIs
-      const response = await axios.get('http://localhost:5000/logs');
+      const response = await axios.get('/logs');
       setsaveLogs(response.data); // Update logs state with fetched logs
     } catch (error) {
       console.error('Error fetching logs:', error);
